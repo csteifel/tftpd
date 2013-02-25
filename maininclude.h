@@ -2,7 +2,7 @@
 #define MAININC_H
 
 #include <string>
-
+#include <thread>
 
 
 #endif
