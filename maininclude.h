@@ -3,6 +3,9 @@
 
 #include <string>
 #include <thread>
-
+#include <iostream>
+#include <string.h>
+#include <netdb.h>
+#include <sys/socket.h>
 
 #endif
