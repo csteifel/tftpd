@@ -4,6 +4,6 @@
 #include <string>
 #include <sys/socket.h>
 
-int sendError(int, std::string);
+void sendError(int, sockaddr_storage, socklen_t, std::string);
 
 #endif

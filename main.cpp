@@ -1,5 +1,6 @@
 #include "maininclude.h"
 #include "sending.h"
+#include "senderror.h"
 
 int main(void){
 	//Set up listening socket for new requests
@@ -37,6 +38,9 @@ int main(void){
 		char * afterFilename;
 		//Forcing 6 because we are only worrying about octet/binary mode
 		char mode[6];
+		int clientFd;
+
+
 		socklen_t comingFromLen = sizeof(struct sockaddr_storage);
 
 		memset(buffer, 0, 512);
@@ -70,7 +74,7 @@ int main(void){
 		//Got information from request packet
 		//Now create a new socket to respond to the request
 
-
+		clientFd = socket(comingFrom.ss_family, SOCK_DGRAM, 0);
 
 		if(opcode == 1){
 			//Asking for a file so we must send a file to them
@@ -80,7 +84,7 @@ int main(void){
 			std::cerr << "Receiving\n";
 		}else{
 			//Not a read or write request so send back an error
-			std::cerr << "Else\n";
+			sendError(clientFd, comingFrom, comingFromLen, "Not a valid request\n");
 		}
 	}
 

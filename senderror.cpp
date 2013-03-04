@@ -1,12 +1,6 @@
 #include "senderror.h"
 
-/**
- * Sending errors to a client
- * @param  sockfd      [description]
- * @param  errorString [description]
- * @return             [description]
- */
-int sendError(int sockfd, std::string errorString){
 
-	return 0;
+void sendError(int sockfd, sockaddr_storage sendErrTo, socklen_t sendErrToLen, std::string errorString){
+	sendto(sockfd, errorString.c_str(), errorString.length(), 0, (struct sockaddr *) &sendErrTo, sendErrToLen);
 }
