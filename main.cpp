@@ -78,7 +78,7 @@ int main(void){
 
 		if(opcode == 1){
 			//Asking for a file so we must send a file to them
-			sendFile(filename);
+			std::thread sendingThread(sendFile, clientFd, comingFrom, comingFromLen, filename);//sendFile(clientFd, comingFrom, comingFromLen, filename));
 		}else if(opcode == 2){
 			//Giving us a file so we must check if we can take it
 			std::cerr << "Receiving\n";

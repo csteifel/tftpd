@@ -5,6 +5,6 @@
 #include <iostream>
 #include <sys/socket.h>
 
-int sendFile(std::string filename);
+int sendFile(int, sockaddr_storage, socklen_t, std::string filename);
 
 #endif
