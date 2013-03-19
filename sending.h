@@ -3,8 +3,14 @@
 
 #include <string>
 #include <iostream>
+#include <fstream>
+#include <string.h>
+#include <netdb.h>
 #include <sys/socket.h>
 
-int sendFile(int, sockaddr_storage, socklen_t, std::string filename);
+#include "senderror.h"
+
+void sendFile(int, sockaddr_storage, socklen_t, char *);
+
 
 #endif
