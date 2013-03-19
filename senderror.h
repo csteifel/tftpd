@@ -8,6 +8,6 @@
 #include <netdb.h>
 #include <sys/socket.h>
 
-void sendError(int, sockaddr_storage, socklen_t, unsigned short, std::string);
+void sendError(int, sockaddr_storage, socklen_t, uint16_t, std::string);
 
 #endif

@@ -1,10 +1,17 @@
 #include "senderror.h"
 
-
-void sendError(int sockfd, sockaddr_storage sendErrTo, socklen_t sendErrToLen, unsigned short errorCode, std::string errorString){
+/**
+ * Sends an error to the client
+ * @param sockfd       The socket that the message is to be sent on (INVALID AFTER FUNCTION EXECUTION)
+ * @param sendErrTo    sockaddr information needed for addressing
+ * @param sendErrToLen sockaddr length information
+ * @param errorCode    The error code to send to the client
+ * @param errorString  The errror message to send to the client
+ */
+void sendError(int sockfd, sockaddr_storage sendErrTo, socklen_t sendErrToLen, uint16_t errorCode, std::string errorString){
 	unsigned int bufSize = 2 + 2 + errorString.length() + 1;
 	char * errorBuffer = (char *) malloc(bufSize);
-	unsigned short opcode = htons(5);
+	uint16_t opcode = htons(5);
 	errorCode = htons(errorCode);
 
 	//Zero everything out and then copy over all the information we need to send
