@@ -81,7 +81,8 @@ int main(void){
 				sendingThread.detach();
 			}else if(opcode == 2){
 				//Giving us a file so we must check if we can take it
-				std::cerr << "Receiving\n";
+				std::thread recvThread(receiveFile, clientFd, comingFrom, comingFromLen, filename);
+				recvThread.detach();
 			}else{
 				//Not a read or write request so send back an error
 				std::thread sendErrorThread(sendError, clientFd, comingFrom, comingFromLen, 4, "Illegal TFTP operation.");
