@@ -61,6 +61,7 @@ void sendFile(int clientFd, sockaddr_storage sendingTo, socklen_t sendingToLen, 
 			if(actuallySent == -1){
 				std::cerr << "There was an error sending the packet! Supposed to send " << sendAmount << " actually sent " << actuallySent << "\n";
 				std::cerr << "Error code: " << errno << " error string: " << strerror(errno) << "\n";
+				close(clientFd);
 				return;
 			}
 
@@ -110,5 +111,5 @@ void sendFile(int clientFd, sockaddr_storage sendingTo, socklen_t sendingToLen, 
 		blockNumber = htons(++blockNumberHost);
 	}
 
-
+	close(clientFd);
 }
