@@ -40,17 +40,17 @@ void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen,
 		amountSent = sendto(clientFd, ack, 4, 0, (struct sockaddr *) &recvFrom, recvFromLen);
 
 		if(amountSent != 4){
-			std::cerr << "There was an error sending the packet! Supposed to send " << sendAmount << " actually sent " << actuallySent << "\n";
+			std::cerr << "There was an error sending the packet!\n";
 			std::cerr << "Error code: " << errno << " error string: " << strerror(errno) << "\n";
 			close(clientFd);
 			return;
 		}
 
-		recvAmount = recvFrom(clientFd, data, 516, 0, NULL, NULL);
+		recvAmount = recvfrom(clientFd, data, 516, 0, NULL, NULL);
 
 		if(recvAmount == -1){
 			//There was an error with receiving
-			std::cerr << "There was an error sending the packet! Supposed to send " << sendAmount << " actually sent " << actuallySent << "\n";
+			std::cerr << "There was an error receiving the packet!\n";
 			std::cerr << "Error code: " << errno << " error string: " << strerror(errno) << "\n";
 		}else{
 			//This is the last packet that we are going to recieve
@@ -67,7 +67,7 @@ void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen,
 			if(recvAmount < 516){
 				//We are done receiving packets just send the last ack
 				
-				recievedAll = true;	
+				receivedAll = true;	
 			}
 
 
