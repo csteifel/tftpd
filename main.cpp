@@ -26,9 +26,11 @@ int main(void){
 		exit(1);
 	}
 
+	//Set umask for newly created files
+	umask(S_IXUSR | S_IXGRP | S_IWOTH | S_IXOTH);
+
 	//Start waiting for incoming requests
 	while(1){
-		std::cerr << "WAITING\n";
 		struct sockaddr_storage comingFrom;
 		int readAmount;
 		//Statically allocated buffer, will be able to fit any of the initial connection messages
