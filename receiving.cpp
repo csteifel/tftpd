@@ -1,5 +1,12 @@
 #include "receiving.h"
 
+/**
+ * Receive a file from the client
+ * @param clientFd    The socket that was created to send/recv information to the client on
+ * @param recvFrom    Sockaddr structure containing client information
+ * @param recvFromLen The length of the sockaddr structure
+ * @param fname       receiveFile is responsible for freeing this memory
+ */
 void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen, char * fname){
 	char data[516], ack[4];
 
@@ -23,20 +30,20 @@ void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen,
 	int amountSent, recvAmount;
 
 	ackOpcode = htons(4);
-	blockNum = htons(currentBlockNum);
+	blockNum = htons(currentBlockNum); //Initially set to 0 to send original ack
+	++currentBlockNum;
 
 	//Set up buffers to wait for data
-	memset(data, 0, 516);
 	memset(ack, 0, 4);
 
 	memcpy(ack, &ackOpcode, 2);
-	memcpy(ack, &blockNum, 2);
 
-
-	bool receivedAll = false;
+	bool receivedLast = false;
 
 	do{
+		memset(data, 0, 516);
 		//Send ack, start out with ack to take into account sending ack with block number 0.
+		memcpy(ack+2, &blockNum, 2);
 		amountSent = sendto(clientFd, ack, 4, 0, (struct sockaddr *) &recvFrom, recvFromLen);
 
 		if(amountSent != 4){
@@ -62,23 +69,36 @@ void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen,
 				//TODO: add in display for what error was received
 				close(clientFd);
 				return;
+			}else if(recvCode != 3){
+				//The opcode received was wrong
+				sendError(clientFd, recvFrom, recvFromLen, 4, "Illegal TFTP operation.");
+				return;
 			}
 
 			if(recvAmount < 516){
 				//We are done receiving packets just send the last ack
-				
-				receivedAll = true;	
+				receivedLast = true;	
 			}
 
+			memcpy(&blockNum, data+2, 2);
 
+			//If the block number being received isn't the block number
+			//we are on then we don't need to write the data to file
+
+			if(ntohs(blockNum) == currentBlockNum){
+				//We are on the proper block number we can write the data to file
+				file.write(data+4, recvAmount - 4);
+				//We are done with that block num so we can increment the number we are looking for
+				++currentBlockNum;
+			}
 			
 		}
 
-
-	}while(receivedAll == false);
+	}while(receivedLast == false);
 
 	//Send the last ack message to the client
-
+	memcpy(ack+2, &blockNum, 2);
+	amountSent = sendto(clientFd, ack, 4, 0, (struct sockaddr *) &recvFrom, recvFromLen);
 
 	close(clientFd);
 }
