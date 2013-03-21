@@ -10,7 +10,12 @@
 
 #include "senderror.h"
 
+
+#define MAXRETRIES 5
+
 void sendFile(int, sockaddr_storage, socklen_t, char *);
+
+
 
 
 #endif

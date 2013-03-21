@@ -66,7 +66,6 @@ void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen,
 			if(recvCode == 5){
 				//the client sent an error packet we can close connection
 				std::cerr << "Error recieved!";
-				//TODO: add in display for what error was received
 				close(clientFd);
 				return;
 			}else if(recvCode != 3){
@@ -90,6 +89,11 @@ void receiveFile(int clientFd, sockaddr_storage recvFrom, socklen_t recvFromLen,
 				file.write(data+4, recvAmount - 4);
 				//We are done with that block num so we can increment the number we are looking for
 				++currentBlockNum;
+				if(file.bad()){
+					//If the badbit is set after writing its most likely caused by no space left
+					sendError(clientFd, recvFrom, recvFromLen, 3, "Disk full or allocation exceeded.");
+					return;
+				}
 			}
 			
 		}

@@ -39,7 +39,7 @@ int main(void){
 		//Max length for file names is 255 on linux
 		char * filename = (char *) malloc(256);
 		char * afterFilename;
-		//Forcing 6 because we are only worrying about octet/binary mode
+		//Forcing 7 because we are only worrying about octet/binary mode for this project
 		char mode[7];
 		int clientFd;
 

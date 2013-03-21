@@ -14,6 +14,7 @@ void sendFile(int clientFd, sockaddr_storage sendingTo, socklen_t sendingToLen, 
 	uint16_t opcode = htons(3);
 	uint16_t blockNumberHost = 1;
 	uint16_t blockNumber = htons(blockNumberHost);
+	uint16_t retries = 0;
 	bool doneProcessing = false, receivedAck;
 	int actuallySent, amountReceived;
 	size_t sendAmount;
@@ -43,7 +44,7 @@ void sendFile(int clientFd, sockaddr_storage sendingTo, socklen_t sendingToLen, 
 	setsockopt(clientFd, SOL_SOCKET, SO_RCVTIMEO, &timeoutValue, sizeof(struct timeval));
 
 
-	while(file.good() && doneProcessing == false){
+	while(file.good() && doneProcessing == false && retries <= MAXRETRIES){
 
 		memcpy(data+2, &blockNumber, 2);
 
@@ -54,7 +55,7 @@ void sendFile(int clientFd, sockaddr_storage sendingTo, socklen_t sendingToLen, 
 		sendAmount += 4;
 
 		receivedAck = false;
-
+		retries = 0;
 		do{
 			actuallySent = sendto(clientFd, data, sendAmount, 0, (struct sockaddr *) &sendingTo, sendingToLen);
 
@@ -105,11 +106,13 @@ void sendFile(int clientFd, sockaddr_storage sendingTo, socklen_t sendingToLen, 
 					return;
 				}
 			}
-		}while(receivedAck == false);
+			++retries;
+		}while(receivedAck == false && retries <= MAXRETRIES);
 
 		//Move onto the next block
 		blockNumber = htons(++blockNumberHost);
 	}
+
 
 	close(clientFd);
 }
